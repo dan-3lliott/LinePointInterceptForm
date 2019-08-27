@@ -21,6 +21,7 @@ public class JFrame extends javax.swing.JFrame {
      */
     public static ArrayList<Point> points = new ArrayList<Point>();
     public static String projectName;
+    public static final String[] gcCodes = new String[]{"BS", "BV", "GR", "BY", "CO", "LW", "BO", "SM", "BR", "LI", "RR", "AN", "WA", "Other"};
     public JFrame() {
         initComponents();
     }
@@ -35,6 +36,9 @@ public class JFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         fileChooser = new javax.swing.JFileChooser();
+        groundCoverBreakdown = new javax.swing.JDialog();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        gcTable = new javax.swing.JTable();
         infoPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -84,6 +88,59 @@ public class JFrame extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         saveProject = new javax.swing.JMenuItem();
+        calculateMenu = new javax.swing.JMenu();
+        groundCover = new javax.swing.JMenuItem();
+
+        groundCoverBreakdown.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        groundCoverBreakdown.setTitle("Calculation Results");
+        groundCoverBreakdown.setMinimumSize(new java.awt.Dimension(404, 306));
+        groundCoverBreakdown.setPreferredSize(new java.awt.Dimension(404, 306));
+        groundCoverBreakdown.setResizable(false);
+
+        gcTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "GC Code", "% Cover", "# Hits"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        gcTable.setColumnSelectionAllowed(true);
+        gcTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        gcTable.setShowGrid(true);
+        gcTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(gcTable);
+        gcTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (gcTable.getColumnModel().getColumnCount() > 0) {
+            gcTable.getColumnModel().getColumn(0).setResizable(false);
+            gcTable.getColumnModel().getColumn(1).setResizable(false);
+            gcTable.getColumnModel().getColumn(2).setResizable(false);
+        }
+
+        javax.swing.GroupLayout groundCoverBreakdownLayout = new javax.swing.GroupLayout(groundCoverBreakdown.getContentPane());
+        groundCoverBreakdown.getContentPane().setLayout(groundCoverBreakdownLayout);
+        groundCoverBreakdownLayout.setHorizontalGroup(
+            groundCoverBreakdownLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(groundCoverBreakdownLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+        groundCoverBreakdownLayout.setVerticalGroup(
+            groundCoverBreakdownLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(groundCoverBreakdownLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(36, Short.MAX_VALUE))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Line Point Intercept Form");
@@ -453,6 +510,19 @@ public class JFrame extends javax.swing.JFrame {
 
         jMenuBar1.add(fileMenu);
 
+        calculateMenu.setText("Calculate");
+
+        groundCover.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_MASK));
+        groundCover.setText("Ground Cover");
+        groundCover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                groundCoverActionPerformed(evt);
+            }
+        });
+        calculateMenu.add(groundCover);
+
+        jMenuBar1.add(calculateMenu);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -553,6 +623,63 @@ public class JFrame extends javax.swing.JFrame {
     private void saveProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectActionPerformed
         save();
     }//GEN-LAST:event_saveProjectActionPerformed
+
+    private void groundCoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_groundCoverActionPerformed
+        save();
+        int[] gcHits = new int[14];
+        for (Point p : points) {
+            switch (p.getGroundCover()) {
+                case "BS":
+                    gcHits[0]++;
+                    break;
+                case "BV":
+                    gcHits[1]++;
+                    break;
+                case "GR":
+                    gcHits[2]++;
+                    break;
+                case "BY":
+                    gcHits[3]++;
+                    break;
+                case "CO":
+                    gcHits[4]++;
+                    break;
+                case "LW":
+                    gcHits[5]++;
+                    break;
+                case "BO":
+                    gcHits[6]++;
+                    break;
+                case "SM":
+                    gcHits[7]++;
+                    break;
+                case "BR":
+                    gcHits[8]++;
+                    break;
+                case "LI":
+                    gcHits[9]++;
+                    break;
+                case "RR":
+                    gcHits[10]++;
+                    break;
+                case "AN":
+                    gcHits[11]++;
+                    break;
+                case "WA":
+                    gcHits[12]++;
+                    break;
+                default:
+                    gcHits[13]++;
+                    break;
+            }
+        }
+        groundCoverBreakdown.setVisible(true);
+        DefaultTableModel gcTableModel = (DefaultTableModel)gcTable.getModel();
+        gcTableModel.setRowCount(0);
+        for (int i = 0; i < 14; i++) {
+            gcTableModel.addRow(new Object[]{gcCodes[i], Math.round(((double)gcHits[i]/points.size() * 100) * 100d) / 100d + "%", gcHits[i]});
+        }        
+    }//GEN-LAST:event_groundCoverActionPerformed
 
     /**
      * @param args the command line arguments
@@ -687,12 +814,16 @@ public class JFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addPointButton;
+    private javax.swing.JMenu calculateMenu;
     private javax.swing.JTextField dateField;
     private javax.swing.JTextField distanceUnitField;
     private javax.swing.JTextField endField;
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JTable formTable;
+    private javax.swing.JTable gcTable;
+    private javax.swing.JMenuItem groundCover;
+    private javax.swing.JDialog groundCoverBreakdown;
     private javax.swing.JPanel infoPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -729,6 +860,7 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField leftEndField;
     private javax.swing.JTextField projectField;
     private javax.swing.JButton removePointButton;
