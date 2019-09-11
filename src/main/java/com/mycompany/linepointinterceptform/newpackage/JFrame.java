@@ -105,7 +105,6 @@ public class JFrame extends javax.swing.JFrame {
         groundCoverBreakdown.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         groundCoverBreakdown.setTitle("Calculation Results");
         groundCoverBreakdown.setMinimumSize(new java.awt.Dimension(404, 306));
-        groundCoverBreakdown.setPreferredSize(new java.awt.Dimension(404, 306));
         groundCoverBreakdown.setResizable(false);
 
         gcTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -153,7 +152,7 @@ public class JFrame extends javax.swing.JFrame {
                 .addContainerGap(36, Short.MAX_VALUE))
         );
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Line Point Intercept Form");
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -787,7 +786,12 @@ public class JFrame extends javax.swing.JFrame {
         points.clear();
         DefaultTableModel formTableModel = (DefaultTableModel)formTable.getModel();
         for (int i = 0; i < formTableModel.getRowCount(); i++) {
-            points.add(new Point(Integer.parseInt(formTableModel.getValueAt(i, 0).toString()), formTableModel.getValueAt(i, 1).toString(), formTableModel.getValueAt(i, 2).toString(), formTableModel.getValueAt(i, 3).toString(), formTableModel.getValueAt(i, 4).toString(), formTableModel.getValueAt(i, 5).toString())); //make sure array list of point objects is up to date with form table
+            try {
+                points.add(new Point(Integer.parseInt(formTableModel.getValueAt(i, 0).toString()), formTableModel.getValueAt(i, 1).toString(), formTableModel.getValueAt(i, 2).toString(), formTableModel.getValueAt(i, 3).toString(), formTableModel.getValueAt(i, 4).toString(), formTableModel.getValueAt(i, 5).toString())); //make sure array list of point objects is up to date with form table
+            }
+            catch (NullPointerException ex) {
+                JOptionPane.showMessageDialog(rootPane, "ERROR: Point no. " + (i + 1) + " with unpopulated field not saved.", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
         }
         try {
             FileWriter fileWriter = new FileWriter(file);
