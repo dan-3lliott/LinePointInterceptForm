@@ -732,7 +732,6 @@ public class JFrame extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public void load() {
-        System.out.println("loading");
         openFile();
         try {
             FileReader fileReader = new FileReader(file);
@@ -782,7 +781,6 @@ public class JFrame extends javax.swing.JFrame {
         endField.setText("");
     }
     public void save() {
-        System.out.println("saving");
         if (file == null) {
             saveAs(); //run save as dialog if no file is currently being used
         }
