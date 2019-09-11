@@ -23,7 +23,7 @@ public class JFrame extends javax.swing.JFrame {
      */
     public static ArrayList<Point> points = new ArrayList<Point>();
     public static File file;
-    public static final String[] gcCodes = new String[]{"BS", "BV", "GR", "BY", "CO", "LW", "BO", "SM", "BR", "LI", "RR", "AN", "WA", "Other"};
+    public static final String[] gcCodes = new String[]{"BS", "BV", "GR", "BY", "CO", "LW", "BO", "SM", "BR", "LI", "RR", "AN", "WA", "Other"}; //ground cover codes
     public JFrame() {
         initComponents();
     }
@@ -629,7 +629,7 @@ public class JFrame extends javax.swing.JFrame {
 
     private void addPointButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPointButtonActionPerformed
         DefaultTableModel formTableModel = (DefaultTableModel)formTable.getModel();
-        formTableModel.addRow(new Object[]{null, null, null, null, null, null});
+        formTableModel.addRow(new Object[]{null, null, null, null, null, null}); //add new empty row to form table
     }//GEN-LAST:event_addPointButtonActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
@@ -644,7 +644,7 @@ public class JFrame extends javax.swing.JFrame {
 
     private void removePointButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removePointButtonActionPerformed
         DefaultTableModel formTableModel = (DefaultTableModel)formTable.getModel();
-        formTableModel.removeRow(formTable.getSelectedRow());
+        formTableModel.removeRow(formTable.getSelectedRow()); //remove selected row from form table
     }//GEN-LAST:event_removePointButtonActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -656,7 +656,7 @@ public class JFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_saveProjectActionPerformed
 
     private void groundCoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_groundCoverActionPerformed
-        save();
+        save(); //save in order to transfer any new data points in table into point object form
         int[] gcHits = new int[14];
         for (Point p : points) {
             switch (p.getGroundCover()) {
@@ -706,7 +706,7 @@ public class JFrame extends javax.swing.JFrame {
         }
         groundCoverBreakdown.setVisible(true);
         DefaultTableModel gcTableModel = (DefaultTableModel)gcTable.getModel();
-        gcTableModel.setRowCount(0);
+        gcTableModel.setRowCount(0); //clear results table first
         for (int i = 0; i < 14; i++) {
             gcTableModel.addRow(new Object[]{gcCodes[i], Math.round(((double)gcHits[i]/points.size() * 100) * 100d) / 100d + "%", gcHits[i]});
         }        
@@ -714,7 +714,7 @@ public class JFrame extends javax.swing.JFrame {
 
     private void newProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectActionPerformed
         if (file != null) {
-            save();
+            save(); //only save if we have an actual project being worked on
         }
         clearForm();
         saveAs();
@@ -722,7 +722,7 @@ public class JFrame extends javax.swing.JFrame {
 
     private void openProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProjectActionPerformed
         if (file != null) {
-            save();
+            save(); //only save if we have an actual project being worked on
         }
         clearForm();
         load();
@@ -732,7 +732,7 @@ public class JFrame extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public void load() {
-        openFile();
+        openFile(); //select file to open
         try {
             FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -765,11 +765,11 @@ public class JFrame extends javax.swing.JFrame {
     }
     public void saveAs() {
         if (saveAsDialog.showOpenDialog(rootPane) == saveAsDialog.APPROVE_OPTION) {   
-            file = new File(saveAsDialog.getSelectedFile() + ".lpi");
+            file = new File(saveAsDialog.getSelectedFile() + ".lpi"); //"save as" dialog that automatically adds on the .lpi file extension
         }
     }
     public void clearForm() {
-        DefaultTableModel formTableModel = (DefaultTableModel)formTable.getModel();
+        DefaultTableModel formTableModel = (DefaultTableModel)formTable.getModel(); //clear form table as well as information fields
         formTableModel.setRowCount(0);
         projectField.setText("");
         transectField.setText("");
@@ -787,7 +787,7 @@ public class JFrame extends javax.swing.JFrame {
         points.clear();
         DefaultTableModel formTableModel = (DefaultTableModel)formTable.getModel();
         for (int i = 0; i < formTableModel.getRowCount(); i++) {
-            points.add(new Point(Integer.parseInt(formTableModel.getValueAt(i, 0).toString()), formTableModel.getValueAt(i, 1).toString(), formTableModel.getValueAt(i, 2).toString(), formTableModel.getValueAt(i, 3).toString(), formTableModel.getValueAt(i, 4).toString(), formTableModel.getValueAt(i, 5).toString()));
+            points.add(new Point(Integer.parseInt(formTableModel.getValueAt(i, 0).toString()), formTableModel.getValueAt(i, 1).toString(), formTableModel.getValueAt(i, 2).toString(), formTableModel.getValueAt(i, 3).toString(), formTableModel.getValueAt(i, 4).toString(), formTableModel.getValueAt(i, 5).toString())); //make sure array list of point objects is up to date with form table
         }
         try {
             FileWriter fileWriter = new FileWriter(file);
