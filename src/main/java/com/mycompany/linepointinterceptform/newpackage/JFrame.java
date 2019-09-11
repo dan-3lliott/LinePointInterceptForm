@@ -9,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.io.*;
 import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.*;
 
 /**
  *
@@ -20,7 +22,7 @@ public class JFrame extends javax.swing.JFrame {
      * Creates new form JFrame
      */
     public static ArrayList<Point> points = new ArrayList<Point>();
-    public static String projectName;
+    public static File file;
     public static final String[] gcCodes = new String[]{"BS", "BV", "GR", "BY", "CO", "LW", "BO", "SM", "BR", "LI", "RR", "AN", "WA", "Other"};
     public JFrame() {
         initComponents();
@@ -35,7 +37,8 @@ public class JFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        fileChooser = new javax.swing.JFileChooser();
+        saveAsDialog = new javax.swing.JFileChooser();
+        openDialog = new javax.swing.JFileChooser();
         groundCoverBreakdown = new javax.swing.JDialog();
         jScrollPane2 = new javax.swing.JScrollPane();
         gcTable = new javax.swing.JTable();
@@ -87,9 +90,17 @@ public class JFrame extends javax.swing.JFrame {
         jLabel28 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
+        newProject = new javax.swing.JMenuItem();
+        openProject = new javax.swing.JMenuItem();
         saveProject = new javax.swing.JMenuItem();
         calculateMenu = new javax.swing.JMenu();
         groundCover = new javax.swing.JMenuItem();
+
+        saveAsDialog.setDialogTitle("Save Project As");
+        saveAsDialog.setFileFilter(new FileNameExtensionFilter("LPI file", "lpi"));
+
+        openDialog.setDialogTitle("Open Project");
+        openDialog.setFileFilter(new FileNameExtensionFilter("LPI file", "lpi"));
 
         groundCoverBreakdown.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         groundCoverBreakdown.setTitle("Calculation Results");
@@ -499,6 +510,24 @@ public class JFrame extends javax.swing.JFrame {
 
         fileMenu.setText("File");
 
+        newProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        newProject.setText("New Project");
+        newProject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newProjectActionPerformed(evt);
+            }
+        });
+        fileMenu.add(newProject);
+
+        openProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        openProject.setText("Open Project");
+        openProject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openProjectActionPerformed(evt);
+            }
+        });
+        fileMenu.add(openProject);
+
         saveProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         saveProject.setText("Save Project");
         saveProject.addActionListener(new java.awt.event.ActionListener() {
@@ -608,7 +637,9 @@ public class JFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        save();
+        if (file != null) {
+            save();
+        }
     }//GEN-LAST:event_formWindowClosing
 
     private void removePointButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removePointButtonActionPerformed
@@ -681,21 +712,33 @@ public class JFrame extends javax.swing.JFrame {
         }        
     }//GEN-LAST:event_groundCoverActionPerformed
 
+    private void newProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectActionPerformed
+        if (file != null) {
+            save();
+        }
+        clearForm();
+        saveAs();
+    }//GEN-LAST:event_newProjectActionPerformed
+
+    private void openProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProjectActionPerformed
+        if (file != null) {
+            save();
+        }
+        clearForm();
+        load();
+    }//GEN-LAST:event_openProjectActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public void load() {
         System.out.println("loading");
-        int fileChooserValue = fileChooser.showOpenDialog(rootPane);
-        if (fileChooserValue == fileChooser.APPROVE_OPTION) {
-            projectName = fileChooser.getName(fileChooser.getSelectedFile());
-        }
+        openFile();
         try {
-            FileReader fileReader = new FileReader(projectName);
+            FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             int numPoints = Integer.parseInt(bufferedReader.readLine());
             for (int i = 0; i < numPoints; i++) {
-                System.out.println("" + i);
                 points.add(new Point(Integer.parseInt(bufferedReader.readLine()), bufferedReader.readLine(), bufferedReader.readLine(), bufferedReader.readLine(), bufferedReader.readLine(), bufferedReader.readLine()));
             }
             for (Point p : points) {   
@@ -716,15 +759,40 @@ public class JFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Error reading save file.");        
         }
     }
+    public void openFile() {
+        if (openDialog.showOpenDialog(rootPane) == openDialog.APPROVE_OPTION) {
+            file = openDialog.getSelectedFile();
+        }
+    }
+    public void saveAs() {
+        if (saveAsDialog.showOpenDialog(rootPane) == saveAsDialog.APPROVE_OPTION) {   
+            file = new File(saveAsDialog.getSelectedFile() + ".lpi");
+        }
+    }
+    public void clearForm() {
+        DefaultTableModel formTableModel = (DefaultTableModel)formTable.getModel();
+        formTableModel.setRowCount(0);
+        projectField.setText("");
+        transectField.setText("");
+        dateField.setText("");
+        leftEndField.setText("");
+        rightEndField.setText("");
+        distanceUnitField.setText("");
+        startField.setText("");
+        endField.setText("");
+    }
     public void save() {
         System.out.println("saving");
+        if (file == null) {
+            saveAs(); //run save as dialog if no file is currently being used
+        }
         points.clear();
         DefaultTableModel formTableModel = (DefaultTableModel)formTable.getModel();
         for (int i = 0; i < formTableModel.getRowCount(); i++) {
             points.add(new Point(Integer.parseInt(formTableModel.getValueAt(i, 0).toString()), formTableModel.getValueAt(i, 1).toString(), formTableModel.getValueAt(i, 2).toString(), formTableModel.getValueAt(i, 3).toString(), formTableModel.getValueAt(i, 4).toString(), formTableModel.getValueAt(i, 5).toString()));
         }
         try {
-            FileWriter fileWriter = new FileWriter(projectName);
+            FileWriter fileWriter = new FileWriter(file);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             bufferedWriter.write("" + points.size());
             bufferedWriter.newLine();
@@ -763,19 +831,6 @@ public class JFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Error writing to save file.");
         }
     }
-    public void open() {
-        String[] options = {"New Project", "Load Project"};
-        int choice = JOptionPane.showOptionDialog(rootPane, "Create new project or load existing project file?", "Confirm", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-        if (choice == 0) {
-            newProject();
-        }
-        else if (choice == 1) {
-            load();
-        }
-    }
-    public void newProject() {
-        projectName = JOptionPane.showInputDialog(rootPane, "Enter save file name (.lpi):");
-    }
     public static void main(String args[]) {
         
         /* Set the Nimbus look and feel */
@@ -807,7 +862,6 @@ public class JFrame extends javax.swing.JFrame {
             public void run() {
                 JFrame interceptForm = new JFrame();
                 interceptForm.setVisible(true);
-                interceptForm.open();
             }
         });
     }
@@ -818,7 +872,6 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JTextField dateField;
     private javax.swing.JTextField distanceUnitField;
     private javax.swing.JTextField endField;
-    private javax.swing.JFileChooser fileChooser;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JTable formTable;
     private javax.swing.JTable gcTable;
@@ -862,9 +915,13 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField leftEndField;
+    private javax.swing.JMenuItem newProject;
+    private javax.swing.JFileChooser openDialog;
+    private javax.swing.JMenuItem openProject;
     private javax.swing.JTextField projectField;
     private javax.swing.JButton removePointButton;
     private javax.swing.JTextField rightEndField;
+    private javax.swing.JFileChooser saveAsDialog;
     private javax.swing.JMenuItem saveProject;
     private javax.swing.JTextField startField;
     private javax.swing.JTextField transectField;
