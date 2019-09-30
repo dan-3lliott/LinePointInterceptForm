@@ -756,6 +756,9 @@ public class JFrame extends javax.swing.JFrame {
         catch(IOException ex) {
             JOptionPane.showMessageDialog(rootPane, "Error reading save file.");        
         }
+        catch (NullPointerException ex) {
+            //nothing, since they most likely just closed the file chooser dialog
+        }
     }
     public void openFile() {
         if (openDialog.showOpenDialog(rootPane) == openDialog.APPROVE_OPTION) {
